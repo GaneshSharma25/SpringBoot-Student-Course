@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.app.dto.ApiResponse;
 import com.app.dto.StudentDTO;
 import com.app.entites.Course;
+import com.app.entites.CourseTitle;
 import com.app.entites.Student;
 import com.app.exceptions.CustomException;
 import com.app.repositories.CourseRepository;
@@ -61,6 +62,22 @@ public class StudentServiceImpl implements StudentService {
 		std.setCourse(course);
 		studentRepository.save(std);
 		return new ApiResponse("Student added successfully!!");
+	}
+
+	@Override
+	public List<StudentDTO> getStudentByCourseName(CourseTitle course) throws CustomException {
+
+		Course c = courseRepo.findByTitle(course).orElseThrow(() -> new CustomException("Course not found!!"));
+
+		List<Student> std = studentRepository.findByCourse(c);
+
+		List<StudentDTO> stdDto = new ArrayList<StudentDTO>();
+
+		std.forEach((s) -> {
+			stdDto.add(mapper.map(s, StudentDTO.class));
+		});
+
+		return stdDto;
 	}
 
 }
